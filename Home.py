@@ -50,14 +50,14 @@ st.markdown("""
     .hero {
         padding: 45px 38px;
         border-radius: 18px;
-        background: linear-gradient(
-            120deg,
-            rgba(80, 100, 180, 0.18),
-            rgba(100, 160, 190, 0.08)
-        );
-        border: 1px solid rgba(128,128,128,0.22);
+        background:
+            radial-gradient(circle at 88% 18%, rgba(168, 85, 247, 0.20), transparent 32%),
+            radial-gradient(circle at 8% 90%, rgba(34, 211, 238, 0.16), transparent 34%),
+            linear-gradient(120deg, rgba(59, 130, 246, 0.16), rgba(139, 92, 246, 0.10), rgba(20, 184, 166, 0.08));
+        border: 1px solid rgba(129, 140, 248, 0.35);
+        box-shadow: 0 12px 35px rgba(59, 130, 246, 0.08);
         margin-top: 20px;
-        margin-bottom: 38px;
+        margin-bottom: 28px;
     }
 
     .hero-tag {
@@ -86,20 +86,28 @@ st.markdown("""
     /* Feature cards */
     .feature-card {
         padding: 25px;
-        border: 1px solid rgba(128,128,128,0.25);
+        border: 1px solid rgba(129, 140, 248, 0.24);
+        border-top: 3px solid rgba(99, 102, 241, 0.75);
         border-radius: 14px;
         min-height: 190px;
         margin-bottom: 12px;
-        transition: border-color 0.2s ease;
+        background: linear-gradient(145deg, rgba(59, 130, 246, 0.075), rgba(139, 92, 246, 0.035));
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .feature-card:hover {
-        border-color: #7799df;
+        border-color: rgba(129, 140, 248, 0.75);
+        box-shadow: 0 10px 24px rgba(99, 102, 241, 0.10);
+        transform: translateY(-3px);
     }
 
     .feature-icon {
-        font-size: 32px;
+        display: inline-block;
+        font-size: 30px;
         margin-bottom: 12px;
+        padding: 8px 11px;
+        border-radius: 12px;
+        background: rgba(99, 102, 241, 0.13);
     }
 
     .feature-title {
@@ -120,6 +128,25 @@ st.markdown("""
         font-weight: 700;
         color: #7799df;
         letter-spacing: 1px;
+    }
+
+    /* Primary navigation link */
+    a[data-testid="stPageLink-NavLink"] {
+        border: 1px solid rgba(99, 102, 241, 0.45);
+        border-radius: 12px;
+        background: linear-gradient(100deg, rgba(59, 130, 246, 0.20), rgba(139, 92, 246, 0.18));
+        padding: 0.55rem 0.9rem;
+        transition: border-color 0.2s ease, filter 0.2s ease;
+    }
+
+    a[data-testid="stPageLink-NavLink"]:hover {
+        border-color: rgba(129, 140, 248, 0.9);
+        filter: brightness(1.12);
+    }
+
+    /* Workflow */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        border-color: rgba(45, 212, 191, 0.22);
     }
 
     /* Footer */
@@ -155,7 +182,7 @@ with st.sidebar:
 
     st.divider()
 
-    st.caption("Powered by Streamlit, Groq and AI.")
+    # st.caption("Powered by Streamlit, Groq and AI.")
 
 
 # ==========================================
@@ -183,6 +210,15 @@ render_html("""
 
     </div>
 """)
+
+# Primary navigation to the next step in the workflow.
+st.caption("✨ GET STARTED")
+st.page_link(
+    "pages/1_Resume_Analysis.py",
+    label="Start Resume Analysis",
+    icon="📄",
+    use_container_width=True
+)
 
 
 # ==========================================
@@ -253,7 +289,7 @@ with col2:
     """)
 
     st.page_link(
-        "pages/2_Interview_Preparation.py",
+        "pages/5_Interview_Preparation.py",
         label="Prepare for interviews",
         icon="🧠"
     )
