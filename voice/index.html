@@ -1,0 +1,572 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Voice Interview</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 18px;
+            font-family: Arial, sans-serif;
+            background: #0e1117;
+            color: white;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .question {
+            padding: 16px;
+            background: #20232b;
+            border-radius: 12px;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 0;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #888;
+        }
+
+        .active {
+            background: #22c55e;
+        }
+
+        .recording {
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .transcript {
+            margin-top: 15px;
+            padding: 13px;
+            background: #20232b;
+            border-radius: 9px;
+            color: #cbd5e1;
+            min-height: 45px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h3>🎙️ Voice Interview</h3>
+
+    <div id="question" class="question">
+        Waiting for interview question...
+    </div>
+
+    <div class="status">
+        <span id="dot" class="dot"></span>
+        <span id="status">Microphone not enabled</span>
+    </div>
+
+    <button id="enableButton">
+        Enable Microphone
+    </button>
+
+    <div id="transcript" class="transcript">
+        Your answer will appear here after recording.
+    </div>
+
+</div>
+
+<script>
+
+(() => {
+
+    const questionElement = document.getElementById("question");
+    const statusElement = document.getElementById("status");
+    const dotElement = document.getElementById("dot");
+    const enableButton = document.getElementById("enableButton");
+    const transcriptElement = document.getElementById("transcript");
+
+    let stream = null;
+    let audioContext = null;
+    let analyser = null;
+    let recorder = null;
+
+    let chunks = [];
+
+    let isEnabled = false;
+    let isRecording = false;
+
+    let speechDetected = false;
+    let silenceStartedAt = null;
+
+    let silenceSeconds = 2;
+
+    let currentQuestionId = null;
+    let lastQuestionId = null;
+
+    let currentQuestion = null;
+    let currentAudio = null;
+
+    let monitorId = null;
+
+
+    // Send a value to Streamlit Python
+    function sendToStreamlit(value) {
+
+        window.parent.postMessage({
+
+            isStreamlitMessage: true,
+
+            type: "streamlit:setComponentValue",
+
+            value: value,
+
+            dataType: "json"
+
+        }, "*");
+
+    }
+
+
+    // Update component height
+    function setHeight() {
+
+        window.parent.postMessage({
+
+            isStreamlitMessage: true,
+
+            type: "streamlit:setFrameHeight",
+
+            height: document.body.scrollHeight
+
+        }, "*");
+
+    }
+
+
+    function setStatus(message, mode = "") {
+
+        statusElement.textContent = message;
+
+        dotElement.className = "dot";
+
+        if (mode) {
+            dotElement.classList.add(mode);
+        }
+
+    }
+
+
+    // Enable microphone
+    async function enableMicrophone() {
+
+        try {
+
+            stream = await navigator.mediaDevices.getUserMedia({
+
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                }
+
+            });
+
+            const AudioContextClass =
+                window.AudioContext || window.webkitAudioContext;
+
+            audioContext = new AudioContextClass();
+
+            await audioContext.resume();
+
+            const source =
+                audioContext.createMediaStreamSource(stream);
+
+            analyser = audioContext.createAnalyser();
+
+            analyser.fftSize = 2048;
+
+            source.connect(analyser);
+
+            isEnabled = true;
+
+            enableButton.disabled = true;
+
+            enableButton.textContent = "Microphone Enabled";
+
+            setStatus("Microphone enabled.", "active");
+
+            // Play the pending question after permission is granted
+            if (currentQuestion) {
+                playQuestion();
+            }
+
+        } catch (error) {
+
+            setStatus(
+                error.message || "Microphone permission denied."
+            );
+
+            sendToStreamlit({
+                type: "VOICE_ERROR",
+                message: error.message || String(error)
+            });
+
+        }
+
+    }
+
+
+    // Play AI question
+    function playQuestion() {
+
+        if (!isEnabled || !currentQuestion) {
+            return;
+        }
+
+        const question = currentQuestion;
+
+        questionElement.textContent = question.text;
+
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
+
+        // No audio supplied: start recording immediately
+        if (!question.audio) {
+            startRecording();
+            return;
+        }
+
+        const audioUrl =
+            "data:audio/mp3;base64," + question.audio;
+
+        currentAudio = new Audio(audioUrl);
+
+        setStatus("AI is speaking...");
+
+        currentAudio.onended = () => {
+
+            setStatus("AI finished. Your turn to speak.");
+
+            startRecording();
+
+        };
+
+        currentAudio.onerror = () => {
+
+            setStatus("Audio playback failed.");
+
+            startRecording();
+
+        };
+
+        currentAudio.play().catch(error => {
+
+            setStatus("Audio playback blocked by browser.");
+
+            sendToStreamlit({
+                type: "VOICE_ERROR",
+                message: error.message
+            });
+
+        });
+
+    }
+
+
+    // Start candidate recording
+    function startRecording() {
+
+        if (!isEnabled || !stream || isRecording) {
+            return;
+        }
+
+        const mimeTypes = [
+            "audio/webm;codecs=opus",
+            "audio/webm",
+            "audio/mp4"
+        ];
+
+        let mimeType = "";
+
+        for (const type of mimeTypes) {
+
+            if (MediaRecorder.isTypeSupported(type)) {
+                mimeType = type;
+                break;
+            }
+
+        }
+
+        try {
+
+            recorder = new MediaRecorder(
+                stream,
+                mimeType ? { mimeType } : undefined
+            );
+
+        } catch (error) {
+
+            setStatus("Recording is not supported.");
+
+            return;
+
+        }
+
+        chunks = [];
+
+        speechDetected = false;
+
+        silenceStartedAt = null;
+
+        isRecording = true;
+
+        recorder.ondataavailable = event => {
+
+            if (event.data && event.data.size > 0) {
+                chunks.push(event.data);
+            }
+
+        };
+
+
+        recorder.onstop = async () => {
+
+            isRecording = false;
+
+            if (monitorId) {
+                cancelAnimationFrame(monitorId);
+                monitorId = null;
+            }
+
+            const blob = new Blob(chunks, {
+                type: recorder.mimeType || "audio/webm"
+            });
+
+            if (blob.size === 0) {
+
+                setStatus("No audio captured. Waiting for another attempt.");
+
+                return;
+
+            }
+
+            setStatus("Sending answer to AI...");
+
+            transcriptElement.textContent =
+                "Processing your answer...";
+
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+
+                const base64Audio =
+                    reader.result.split(",")[1];
+
+                const recordingId =
+                    window.crypto && window.crypto.randomUUID
+                        ? window.crypto.randomUUID()
+                        : String(Date.now()) + Math.random();
+
+                sendToStreamlit({
+
+                    type: "VOICE_RECORDING",
+
+                    recording_id: recordingId,
+
+                    question_id: currentQuestionId,
+
+                    mime_type: blob.type || "audio/webm",
+
+                    audio_base64: base64Audio
+
+                });
+
+            };
+
+            reader.readAsDataURL(blob);
+
+        };
+
+
+        recorder.start(250);
+
+        setStatus("Listening... Speak your answer.", "recording");
+
+        monitorSilence();
+
+    }
+
+
+    // Detect when candidate stops speaking
+    function monitorSilence() {
+
+        if (!analyser || !isRecording) {
+            return;
+        }
+
+        const samples = new Uint8Array(analyser.fftSize);
+
+        analyser.getByteTimeDomainData(samples);
+
+        let sum = 0;
+
+        for (let i = 0; i < samples.length; i++) {
+
+            const value = (samples[i] - 128) / 128;
+
+            sum += value * value;
+
+        }
+
+        const rms = Math.sqrt(sum / samples.length);
+
+        const threshold = 0.018;
+
+        const now = Date.now();
+
+        if (rms > threshold) {
+
+            speechDetected = true;
+
+            silenceStartedAt = null;
+
+        }
+
+        else if (speechDetected) {
+
+            if (silenceStartedAt === null) {
+                silenceStartedAt = now;
+            }
+
+            const silenceDuration =
+                (now - silenceStartedAt) / 1000;
+
+            if (silenceDuration >= silenceSeconds) {
+
+                setStatus("Answer completed.");
+
+                recorder.stop();
+
+                return;
+
+            }
+
+        }
+
+        monitorId = requestAnimationFrame(monitorSilence);
+
+    }
+
+
+    // Enable microphone button
+    enableButton.addEventListener(
+        "click",
+        enableMicrophone
+    );
+
+
+    // Receive updates from Streamlit
+    window.addEventListener("message", event => {
+
+        const data = event.data;
+
+        if (!data || data.type !== "streamlit:render") {
+            return;
+        }
+
+        const args = data.args || {};
+
+        const questionId = String(args.question_id || "");
+
+        const newQuestion = questionId !== lastQuestionId;
+
+        silenceSeconds = Number(args.silence_seconds) || 2;
+
+        if (!args.active) {
+            return;
+        }
+
+        if (newQuestion) {
+
+            lastQuestionId = questionId;
+
+            currentQuestionId = questionId;
+
+            currentQuestion = {
+
+                text: args.question || "",
+
+                audio: args.audio_b64 || ""
+
+            };
+
+            if (isEnabled) {
+                playQuestion();
+            }
+
+        }
+
+        setHeight();
+
+    });
+
+
+    // Tell Streamlit component is ready
+    window.parent.postMessage({
+
+        isStreamlitMessage: true,
+
+        type: "streamlit:componentReady",
+
+        apiVersion: 1
+
+    }, "*");
+
+
+    setHeight();
+
+})();
+
+</script>
+
+</body>
+</html>

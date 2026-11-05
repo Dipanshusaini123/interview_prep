@@ -20,3 +20,5 @@ requests
 easyocr
 pillow
 numpy
+streamlit-webrtc
+webrtcvad-wheels
