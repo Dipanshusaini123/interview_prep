@@ -1,0 +1,205 @@
+# 🎯 Interview Accelerator – AI-Powered Interview Preparation Platform
+
+An AI-powered interview preparation platform designed to help candidates prepare smarter and interview with confidence. Analyze your resume, generate personalized interview questions, practice through real-time voice-based mock interviews, and receive AI-powered performance feedback.
+
+🌐 **Live Application:** [Interview Accelerator](https://interviewprep2.streamlit.app/)
+
+---
+
+## 🚀 Features
+
+### 📄 1. Resume & Job Description Analysis
+
+Analyze your resume against a target job description using AI.
+
+- Upload resume and job description in PDF format.
+- Extract information from text-based and scanned PDFs.
+- Identify relevant skills, qualifications, and experience.
+- Analyze compatibility between your profile and the target role.
+- Highlight strengths, missing skills, and improvement areas.
+
+### 🧠 2. AI-Powered Interview Preparation
+
+Generate personalized interview questions using three categories:
+
+**Category 1 – General Interview Questions**
+- Role-specific technical and behavioural questions.
+- Questions covering fundamental concepts and industry knowledge.
+
+**Category 2 – Resume-Specific Questions**
+- Questions based on projects, skills, internships, and experience mentioned in your resume.
+- Focus on the candidate's actual background.
+
+**Category 3 – Deep-Dive Resume Questions**
+- Advanced questions exploring project architecture and implementation.
+- Questions about technical decisions, challenges, limitations, and problem-solving.
+
+**Additional capabilities:**
+- Select the number of questions to generate.
+- Generate personalized sample answers for individual questions.
+- Tailor answers according to the resume and target job role.
+- Download generated questions.
+
+### 🎤 3. AI Voice-Based Mock Interview
+
+Experience a one-to-one, call-like interview with an AI interviewer.
+
+- AI interviewer asks questions through voice.
+- Answer questions using your microphone.
+- Convert spoken responses into text using speech recognition.
+- Generate adaptive follow-up questions based on candidate responses.
+- Maintain conversational context and interview memory.
+- Simulate a realistic interview experience.
+
+### 📊 4. AI-Powered Performance Report
+
+Receive detailed feedback based on your actual mock interview responses.
+
+**Overall Evaluation**
+- Overall score out of 100.
+- Interview readiness assessment.
+
+**Competency Evaluation**
+- Role Fit
+- Technical Knowledge
+- Problem Solving
+- Communication
+- Confidence
+- Depth of Understanding
+- Behavioural Fit
+
+**Detailed Feedback**
+- Question-wise answer evaluation.
+- Strengths and weaknesses.
+- Preparation gaps.
+- Actionable improvement recommendations.
+- Personalized preparation roadmap.
+
+---
+
+## 🛠️ Technology Stack
+
+| Category | Technologies |
+|---|---|
+| Programming Language | Python |
+| Frontend & Application | Streamlit |
+| LLM Integration | Groq API, LangChain |
+| Language Model | GPT-OSS-120B |
+| Speech Recognition | Groq Whisper – whisper-large-v3-turbo |
+| Text-to-Speech | Edge TTS |
+| PDF Processing | PyMuPDF, PyPDF |
+| OCR | EasyOCR |
+| Data Processing | Python |
+| Deployment | Streamlit Community Cloud |
+| Version Control | Git & GitHub |
+
+---
+
+## 🔄 Application Workflow
+
+```text
+             Interview Accelerator
+                      |
+                      ▼
+             Resume & JD Analysis
+                      |
+                      ▼
+             Interview Preparation
+                      |
+          ┌───────────┼───────────┐
+          ▼           ▼           ▼
+       General     Resume      Deep-Dive
+      Questions   Questions    Questions
+          └───────────┼───────────┘
+                      |
+                      ▼
+              Sample Answers
+                      |
+                      ▼
+              Voice Mock Interview
+                      |
+                      ▼
+              AI Performance Report
+                      |
+                      ▼
+             Personalized Feedback
+```
+
+---
+
+## 🏗️ Project Architecture
+
+```text
+Interview Accelerator/
+│
+├── app.py
+│
+├── pages/
+│   ├── 1_Resume_Analysis.py
+│   ├── 3_Mock_Interview.py
+│   ├── 4_Performance_Report.py
+│   └── 5_Interview_Preparation.py
+│
+├── modules/
+│   ├── resume_jd_analyzer.py
+│   └── question_generator.py
+│
+├── voice/
+│   ├── app.py
+│   └── index.html
+│
+├── requirements.txt
+│
+└── README.md
+```
+
+---
+
+## 📸 Application Screenshots
+
+### 🏠 Home Dashboard
+
+![Home Dashboard](assets/home.png)
+
+### 📄 Resume & Job Description Analysis
+
+![Resume Analysis](assets/resume-analysis.png)
+
+### 🎤 AI Mock Interview
+
+![Mock Interview](assets/mock-interview.png)
+
+### 📊 Interview Performance Report
+
+![Performance Report](assets/performance-report.png)
+
+### 🧠 AI Interview Preparation
+
+![Interview Preparation](assets/interview-preparation.png)
+
+---
+
+## 🔮 Future Enhancements
+
+- Advanced adaptive interview questioning.
+- More job roles and interview categories.
+- Improved voice interaction and response analysis.
+- Interview history and performance tracking.
+- Personalized learning recommendations.
+- Enhanced interview evaluation and feedback.
+
+---
+
+## 👨‍💻 Developer
+
+**Dipanshu Saini**
+
+B.Tech – Mathematics and Computing  
+Delhi Technological University (DTU)
+
+
+
+---
+
+
+
