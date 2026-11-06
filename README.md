@@ -1,6 +1,6 @@
 # 🎯 Interview Accelerator – AI-Powered Interview Preparation Platform
 
-An AI-powered interview preparation platform designed to help candidates prepare smarter and interview with confidence. Analyze your resume, generate personalized interview questions, practice through real-time voice-based mock interviews, and receive AI-powered performance feedback.
+An AI-powered interview preparation platform designed to help candidates prepare smarter and interview with confidence. Analyze your resume, generate personalized interview questions, practice through voice-based mock interviews, and receive AI-powered performance feedback.
 
 🌐 **Live Application:** [Interview Accelerator](https://interviewprep2.streamlit.app/)
 
@@ -9,8 +9,6 @@ An AI-powered interview preparation platform designed to help candidates prepare
 ## 🚀 Features
 
 ### 📄 1. Resume & Job Description Analysis
-
-Analyze your resume against a target job description using AI.
 
 - Upload resume and job description in PDF format.
 - Extract information from text-based and scanned PDFs.
@@ -42,8 +40,7 @@ Generate personalized interview questions using three categories:
 
 ### 🎤 3. AI Voice-Based Mock Interview
 
-Experience a one-to-one, call-like interview with an AI interviewer.
-
+- One-to-one, call-like interview with an AI interviewer.
 - AI interviewer asks questions through voice.
 - Answer questions using your microphone.
 - Convert spoken responses into text using speech recognition.
@@ -89,7 +86,6 @@ Receive detailed feedback based on your actual mock interview responses.
 | Text-to-Speech | Edge TTS |
 | PDF Processing | PyMuPDF, PyPDF |
 | OCR | EasyOCR |
-| Data Processing | Python |
 | Deployment | Streamlit Community Cloud |
 | Version Control | Git & GitHub |
 
@@ -97,33 +93,11 @@ Receive detailed feedback based on your actual mock interview responses.
 
 ## 🔄 Application Workflow
 
-```text
-             Interview Accelerator
-                      |
-                      ▼
-             Resume & JD Analysis
-                      |
-                      ▼
-             Interview Preparation
-                      |
-          ┌───────────┼───────────┐
-          ▼           ▼           ▼
-       General     Resume      Deep-Dive
-      Questions   Questions    Questions
-          └───────────┼───────────┘
-                      |
-                      ▼
-              Sample Answers
-                      |
-                      ▼
-              Voice Mock Interview
-                      |
-                      ▼
-              AI Performance Report
-                      |
-                      ▼
-             Personalized Feedback
-```
+1. **Resume Analysis:** Upload resume and provide job description.
+2. **Interview Preparation:** Generate general, resume-specific, or deep-dive questions.
+3. **Answer Preparation:** Generate personalized sample answers.
+4. **Mock Interview:** Participate in an AI-powered voice interview.
+5. **Performance Evaluation:** Receive detailed AI-generated feedback and recommendations.
 
 ---
 
@@ -155,30 +129,6 @@ Interview Accelerator/
 
 ---
 
-## 📸 Application Screenshots
-
-### 🏠 Home Dashboard
-
-![Home Dashboard](assets/home.png)
-
-### 📄 Resume & Job Description Analysis
-
-![Resume Analysis](assets/resume-analysis.png)
-
-### 🎤 AI Mock Interview
-
-![Mock Interview](assets/mock-interview.png)
-
-### 📊 Interview Performance Report
-
-![Performance Report](assets/performance-report.png)
-
-### 🧠 AI Interview Preparation
-
-![Interview Preparation](assets/interview-preparation.png)
-
----
-
 ## 🔮 Future Enhancements
 
 - Advanced adaptive interview questioning.
@@ -201,5 +151,4 @@ Delhi Technological University (DTU)
 
 ---
 
-
-
+⭐ If you find this project interesting, consider giving the repository a star!
